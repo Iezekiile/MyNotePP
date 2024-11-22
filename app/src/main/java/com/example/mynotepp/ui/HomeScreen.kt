@@ -31,27 +31,47 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mynotepp.model.BaseItem
 import com.example.mynotepp.model.Checklist
-import com.example.mynotepp.ui.theme.MyNotePPTheme
+import com.example.mynotepp.model.Note
+
+enum class ScreenContent {
+    Checklists, Notes
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
-    val checklists = viewModel.checklists.collectAsStateWithLifecycle()
+
+    var currentScreen by rememberSaveable { mutableStateOf(ScreenContent.Checklists) }
+    val notesScreen = viewModel.notes.collectAsStateWithLifecycle().value
+    val checklistsScreen = viewModel.checklists.collectAsStateWithLifecycle().value
+
+    val items: List<BaseItem> = when (currentScreen) {
+        ScreenContent.Notes -> notesScreen
+        ScreenContent.Checklists -> checklistsScreen
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Checklists", // TODO: Change to string resources
+                        text = when (currentScreen) {
+                            ScreenContent.Checklists -> "Checklists"
+                            ScreenContent.Notes -> "Notes"
+                        },
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -60,66 +80,58 @@ fun HomeScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
                     titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
                 navigationIcon = {
-                    IconButton(
-                        onClick = {} // TODO: Button logic
-                    ) {
+                    IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Default.Menu,
-                            contentDescription = "text" // TODO: Change to string resources
+                            contentDescription = "Menu"
                         )
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {} // TODO: Button logic
-                    ) {
+                    IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "text" // TODO: Change to string resources
+                            contentDescription = "More options"
                         )
                     }
                 }
             )
-
         },
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = true,
-                    label = { Text("Checklists") }, // TODO: Change to string resources
-                    onClick = {}, // TODO: add logic
+                    selected = currentScreen == ScreenContent.Checklists,
+                    label = { Text("Checklists") },
+                    onClick = { currentScreen = ScreenContent.Checklists },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "text" // TODO: Change to string resources
+                            contentDescription = "Checklists"
                         )
                     }
                 )
                 NavigationBarItem(
-                    selected = true,
-                    label = { Text("Notes") }, // TODO: Change to string resources
-                    onClick = {}, // TODO: add logic
+                    selected = currentScreen == ScreenContent.Notes,
+                    label = { Text("Notes") },
+                    onClick = { currentScreen = ScreenContent.Notes },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "text" // TODO: Change to string resources
+                            contentDescription = "Notes"
                         )
                     }
                 )
-
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {}
-            ) {
+            FloatingActionButton(onClick = { /* Add new item */ }) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "text" // TODO: Change to string resources
+                    contentDescription = "Add"
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -127,31 +139,26 @@ fun HomeScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp, 16.dp)
+                .padding(16.dp)
         ) {
-            items(checklists.value.toList()) { item ->
+            items(items) { item ->
                 GridItem(item, viewModel)
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
 @Composable
-fun ItemListScreenPreview() {
-    MyNotePPTheme(darkTheme = false) {
-        HomeScreen()
+fun GridItem(item: BaseItem, viewModel: MainScreenViewModel) {
+    val title = when (item) {
+        is Checklist -> item.title
+        is Note -> item.title
+        else -> "Unknown"
     }
-}
 
-@Composable
-fun GridItem(item: Checklist, viewModel: MainScreenViewModel) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-    ) {
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .aspectRatio(1f)) {
         Box(
             modifier = Modifier
                 .padding(4.dp)
@@ -159,27 +166,20 @@ fun GridItem(item: Checklist, viewModel: MainScreenViewModel) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                item.title,
+                title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(8.dp)
             )
-            IconButton(
-                onClick = { viewModel.toggleFavourite(item)},
-                modifier = Modifier
-                    .align(Alignment.TopStart)
 
+            IconButton(
+                onClick = {viewModel.toggleFavourite(item) },
+                modifier = Modifier.align(Alignment.TopStart)
             ) {
                 Icon(
-                    imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = if (item.isFavorite) "Favorite" else "Not Favorite"
+                    imageVector = if ( item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite"
                 )
             }
         }
     }
 }
-
-@Composable
-fun AddMenu(viewModel: MainScreenViewModel){
-
-}
-
