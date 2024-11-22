@@ -8,27 +8,41 @@ import com.example.mynotepp.model.BaseItem
 import com.example.mynotepp.model.Checklist
 import com.example.mynotepp.model.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//data class MainUiState(
-//    val checklists: List<Checklist> = emptyList(),
-//    val notes: List<Note> = emptyList()
-//)
+data class StateUI(
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val screenState: ScreenContent = ScreenContent.Checklists
+)
 
 @HiltViewModel
-class MainScreenViewModel @Inject constructor (
+class MainScreenViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val checklistRepository: ChecklistRepository
 ) : ViewModel() {
 
+    private val _uiState = MutableStateFlow(
+        StateUI(screenState = ScreenContent.Checklists)
+    )
+    val uiState: StateFlow<StateUI> = _uiState.asStateFlow()
 
     val checklists = checklistRepository.observeChecklists().stateIn(
         viewModelScope,
         WhileSubscribed(5000),
-        emptySet()
+        emptyList()
+    )
+
+    val notes = noteRepository.observeNotes().stateIn(
+        viewModelScope,
+        WhileSubscribed(5000),
+        emptyList()
     )
 
     fun toggleFavourite(item: BaseItem) {
@@ -41,7 +55,7 @@ class MainScreenViewModel @Inject constructor (
         }
     }
 
-    fun addNewItem(item: BaseItem){
+    fun addNewItem(item: BaseItem) {
         viewModelScope.launch {
             when (item) {
                 is Note -> noteRepository.save(item)
@@ -51,7 +65,7 @@ class MainScreenViewModel @Inject constructor (
         }
     }
 
-    fun deleteItem(item: BaseItem){
+    fun deleteItem(item: BaseItem) {
         viewModelScope.launch {
             when (item) {
                 is Note -> noteRepository.delete(item.id)
@@ -61,8 +75,6 @@ class MainScreenViewModel @Inject constructor (
         }
     }
 
-
-
 //    private val _uiState = MutableStateFlow(MainUiState())
 //    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
@@ -70,11 +82,6 @@ class MainScreenViewModel @Inject constructor (
 //        refreshAll()
 //    }
 
-//    fun <T> toggleFavorite(item: T) {
-//        viewModelScope.launch {
-//
-//        }
-//    }
 
 //    private fun refreshAll() {
 //        //    _uiState.update { it.copy(loading = true) }

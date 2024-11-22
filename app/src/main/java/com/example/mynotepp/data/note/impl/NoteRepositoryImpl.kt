@@ -45,6 +45,14 @@ class NoteRepositoryImpl @Inject constructor() : NoteRepository {
     }
 
     override fun toggleFavorite(id: String) {
-
+        notesMutableState.update { currentList ->
+            currentList.map { note ->
+                if (note.id == id) {
+                    note.copy(isFavorite = !note.isFavorite)
+                } else {
+                    note
+                }
+            }
+        }
     }
 }
