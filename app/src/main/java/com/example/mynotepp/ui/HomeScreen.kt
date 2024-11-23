@@ -61,6 +61,7 @@ import com.example.mynotepp.model.Note
 fun HomeScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var isAddItemDialogVisible by rememberSaveable { mutableStateOf(false) }
     val notesScreen = viewModel.notes.collectAsStateWithLifecycle().value
     val checklistsScreen = viewModel.checklists.collectAsStateWithLifecycle().value
 
@@ -152,6 +153,16 @@ fun HomeScreen(viewModel: MainScreenViewModel = hiltViewModel()) {
             }
         }
     }
+
+    if (isAddItemDialogVisible) {
+        AddItemDialog(
+            onDismiss = { isAddItemDialogVisible = false },
+            onSave = { title ->
+
+                isAddItemDialogVisible = false
+            }
+        )
+    }
 }
 
 @Composable
@@ -190,4 +201,60 @@ fun GridItem(item: BaseItem, viewModel: MainScreenViewModel) {
             }
         }
     }
+}
+
+
+@Composable
+fun AddItemDialog(
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Add new checklist") },
+        text = {
+            Column {
+                Text("Enter the title:")
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    placeholder = {
+                        Text(
+                            text = "Title",
+                            style = TextStyle(color = Color.Gray)
+                        )
+                    },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (text.isNotBlank()) {
+                    onSave(text)
+                    onDismiss()
+                }
+            }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun AddItemDialogPreview() {
+    AddItemDialog(
+        onDismiss = { /* No-op for preview */ },
+        onSave = { item -> println("Saved item: $item") }
+    )
 }
