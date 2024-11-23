@@ -13,8 +13,13 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+enum class ScreenContent {
+    Checklists, Notes
+}
 
 data class StateUI(
     val isLoading: Boolean = false,
@@ -31,6 +36,7 @@ class MainScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         StateUI(screenState = ScreenContent.Checklists)
     )
+
     val uiState: StateFlow<StateUI> = _uiState.asStateFlow()
 
     val checklists = checklistRepository.observeChecklists().stateIn(
@@ -75,8 +81,11 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-//    private val _uiState = MutableStateFlow(MainUiState())
-//    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
+    fun changeScreenContent(screenState: ScreenContent) {
+        _uiState.update {
+            it.copy(screenState = screenState)
+        }
+    }
 
 //    init {
 //        refreshAll()
