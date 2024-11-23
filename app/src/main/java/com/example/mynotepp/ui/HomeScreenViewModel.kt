@@ -2,8 +2,8 @@ package com.example.mynotepp.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mynotepp.data.checklist.ChecklistRepository
-import com.example.mynotepp.data.note.NoteRepository
+import com.example.mynotepp.data.checklist.ChecklistsRepository
+import com.example.mynotepp.data.note.NotesRepository
 import com.example.mynotepp.model.BaseItem
 import com.example.mynotepp.model.Checklist
 import com.example.mynotepp.model.Note
@@ -29,8 +29,8 @@ data class StateUI(
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    private val noteRepository: NoteRepository,
-    private val checklistRepository: ChecklistRepository
+    private val notesRepository: NotesRepository,
+    private val checklistsRepository: ChecklistsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -39,34 +39,32 @@ class MainScreenViewModel @Inject constructor(
 
     val uiState: StateFlow<StateUI> = _uiState.asStateFlow()
 
-    val checklists = checklistRepository.observeChecklists().stateIn(
+    val checklists = checklistsRepository.observeChecklists().stateIn(
         viewModelScope,
         WhileSubscribed(5000),
         emptyList()
     )
 
-    val notes = noteRepository.observeNotes().stateIn(
+    val notes = notesRepository.observeNotes().stateIn(
         viewModelScope,
         WhileSubscribed(5000),
         emptyList()
     )
 
-    fun toggleFavourite(item: BaseItem) {
+    fun toggleFavourite(id: String) {
         viewModelScope.launch {
-            when (item) {
-                is Note -> noteRepository.toggleFavorite(item.id)
-                is Checklist -> checklistRepository.toggleFavorite(item.id)
-                else -> throw IllegalArgumentException("Unknown item type")
+            when (uiState.value.screenState) {
+                ScreenContent.Notes -> notesRepository.toggleFavorite(id)
+                ScreenContent.Checklists -> checklistsRepository.toggleFavorite(id)
             }
         }
     }
 
-    fun addNewItem(item: BaseItem) {
+    fun addNewItem(title: String) {
         viewModelScope.launch {
-            when (item) {
-                is Note -> noteRepository.save(item)
-                is Checklist -> checklistRepository.save(item)
-                else -> throw IllegalArgumentException("Unknown item type")
+            when (uiState.value.screenState) {
+                ScreenContent.Notes -> notesRepository.save(notesRepository.create(title))
+                ScreenContent.Checklists -> checklistsRepository.save(checklistsRepository.create(title))
             }
         }
     }
@@ -74,8 +72,8 @@ class MainScreenViewModel @Inject constructor(
     fun deleteItem(item: BaseItem) {
         viewModelScope.launch {
             when (item) {
-                is Note -> noteRepository.delete(item.id)
-                is Checklist -> checklistRepository.delete(item.id)
+                is Note -> notesRepository.delete(item.id)
+                is Checklist -> checklistsRepository.delete(item.id)
                 else -> throw IllegalArgumentException("Unknown item type")
             }
         }
