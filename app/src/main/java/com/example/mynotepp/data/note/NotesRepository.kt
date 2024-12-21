@@ -5,6 +5,6 @@ import com.example.mynotepp.model.Note
 import kotlinx.coroutines.flow.Flow
 
 
-interface NoteRepository : BaseRepository<Note> {
+interface NotesRepository : BaseRepository<Note> {
     fun observeNotes() : Flow<List<Note>>
 }

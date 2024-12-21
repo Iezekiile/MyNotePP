@@ -1,8 +1,9 @@
 package com.example.mynotepp.data.checklist.impl
 
 import com.example.mynotepp.data.FakeDataGenerator
-import com.example.mynotepp.data.checklist.ChecklistRepository
+import com.example.mynotepp.data.checklist.ChecklistsRepository
 import com.example.mynotepp.model.Checklist
+import com.example.mynotepp.utils.IdUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -10,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ChecklistRepositoryImpl @Inject constructor() : ChecklistRepository {
+class ChecklistsRepositoryImpl @Inject constructor() : ChecklistsRepository {
 
     private val checklistsMutableState =
         MutableStateFlow(FakeDataGenerator.generateFakeChecklists(8))
@@ -55,4 +56,14 @@ class ChecklistRepositoryImpl @Inject constructor() : ChecklistRepository {
             }
         }
     }
+
+    override fun create(title: String): Checklist {
+        return Checklist(id = IdUtils.generateUniqueId(),
+            title = title,
+            items = emptyList(),
+            isFavorite = false,
+            createdAt = System.currentTimeMillis())
+    }
+
+
 }

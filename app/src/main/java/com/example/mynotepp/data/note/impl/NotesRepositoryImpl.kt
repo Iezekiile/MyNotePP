@@ -1,8 +1,9 @@
 package com.example.mynotepp.data.note.impl
 
 import com.example.mynotepp.data.FakeDataGenerator
-import com.example.mynotepp.data.note.NoteRepository
+import com.example.mynotepp.data.note.NotesRepository
 import com.example.mynotepp.model.Note
+import com.example.mynotepp.utils.IdUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -10,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NoteRepositoryImpl @Inject constructor() : NoteRepository {
+class NotesRepositoryImpl @Inject constructor() : NotesRepository {
 
     private val notesMutableState =
         MutableStateFlow(FakeDataGenerator.generateFakeNotes(8))
@@ -54,5 +55,15 @@ class NoteRepositoryImpl @Inject constructor() : NoteRepository {
                 }
             }
         }
+    }
+
+    override fun create(title: String): Note {
+        return Note(
+            id = IdUtils.generateUniqueId(),
+            title = title,
+            content = "",
+            isFavorite = false,
+            createdAt = System.currentTimeMillis()
+        )
     }
 }
