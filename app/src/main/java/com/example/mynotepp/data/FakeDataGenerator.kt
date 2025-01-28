@@ -1,8 +1,8 @@
 package com.example.mynotepp.data
 
 import com.example.mynotepp.model.Checklist
-import com.example.mynotepp.model.ChecklistItem
 import com.example.mynotepp.model.Note
+import com.example.mynotepp.model.Task
 
 object FakeDataGenerator {
 
@@ -23,19 +23,19 @@ object FakeDataGenerator {
             Checklist(
                 id = index.toString(),
                 title = "Checklist #$index",
-                items = generateFakeChecklistItems(5),
+                tasks = generateFakeChecklistItems(5),
                 isFavorite = index % 2 == 0,
                 createdAt = System.currentTimeMillis()
             )
         }
     }
 
-    private fun generateFakeChecklistItems(count: Int): List<ChecklistItem> {
+    private fun generateFakeChecklistItems(count: Int): List<Task> {
         return List(count) { index ->
-            ChecklistItem(
-                text = "Checklist item #$index",
-                isChecked = index % 2 == 0,
-                createdAt = System.currentTimeMillis()
+            Task(
+                title = "Checklist item #$index",
+                isDone = index % 2 == 0,
+                id = index.toString()
             )
         }
     }

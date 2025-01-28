@@ -1,9 +1,10 @@
 package com.example.mynotepp.data
 
-interface BaseRepository<T> {
+interface BaseItemRepository<T> {
     fun getAll(): List<T>
     fun getById(id: String): T?
     fun save(item: T)
+    fun save(title: String)
     fun delete(id: String)
     fun toggleFavorite(id: String)
 }

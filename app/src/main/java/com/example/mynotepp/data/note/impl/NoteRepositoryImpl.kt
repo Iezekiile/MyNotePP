@@ -38,6 +38,12 @@ class NoteRepositoryImpl @Inject constructor() : NoteRepository {
         }
     }
 
+    override fun save(title: String) {
+        notesMutableState.update { currentList ->
+            currentList.plus(Note(title = title))
+        }
+    }
+
     override fun delete(id: String) {
         notesMutableState.update { currentList ->
             currentList.filter { it.id != id }
@@ -51,6 +57,34 @@ class NoteRepositoryImpl @Inject constructor() : NoteRepository {
                     note.copy(isFavorite = !note.isFavorite)
                 } else {
                     note
+                }
+            }
+        }
+    }
+
+    override fun editNoteContent(noteId: String, newContent: String) {
+        notesMutableState.update { currentList ->
+            currentList.map { checklist ->
+                if (checklist.id == noteId) {
+                    checklist.copy(
+                        content = newContent
+                    )
+                } else {
+                    checklist
+                }
+            }
+        }
+    }
+
+    override fun editNoteTitle(noteId: String, newTitle: String) {
+        notesMutableState.update { currentList ->
+            currentList.map { checklist ->
+                if (checklist.id == noteId) {
+                    checklist.copy(
+                        title = newTitle
+                    )
+                } else {
+                    checklist
                 }
             }
         }

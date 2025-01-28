@@ -1,9 +1,15 @@
 package com.example.mynotepp.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import java.util.UUID
+
+@Parcelize
 data class Checklist(
-    override val id: String = "",
+    override val id: String = UUID.randomUUID().toString(),
     override val title: String,
-    val items: List<ChecklistItem> = emptyList(),
+    val tasks: List<Task> = emptyList(),
     override val isFavorite: Boolean = false,
     override val createdAt: Long = System.currentTimeMillis()
-) : BaseItem
+) : BaseItem, Parcelable
+
