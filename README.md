@@ -64,7 +64,7 @@ This app helps users efficiently organize their tasks, notes, and checklists in 
 ## 🚀 Want to test it?
 
 Now the project is at the closed testing stage on Google Play, we expect a soon release!
-But for now, you can try it by installing the APK: 
+But for now, you can try it by installing the APK from release [here](https://github.com/Iezekiile/MyNotePP/releases/tag/v0.2). 
 
 ---
 ## ✅ Implemented Features
