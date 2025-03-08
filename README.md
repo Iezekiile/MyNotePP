@@ -1,7 +1,32 @@
 # 📱 MyNote
 
 ## 🎥 Demo
-![App Demo](assets/demo.gif)
+
+<details>
+  <summary>Click to expand</summary>
+
+  <div align="center">
+    <table>
+      <tr>
+        <td><img src="./preview/checklists.jpg" width="250"></td>
+        <td><img src="./preview/notes.jpg" width="250"></td>
+        <td><img src="./preview/checklist.jpg" width="250"></td>
+      </tr>
+      <tr>
+        <td><img src="./preview/note.jpg" width="250"></td>
+        <td><img src="./preview/input.jpg" width="250"></td>
+        <td><img src="./preview/settings.jpg" width="250"></td>
+      </tr>
+      <tr>
+        <td><img src="./preview/themes.jpg" width="250"></td>
+        <td><img src="./preview/fonts.jpg" width="250"></td>
+        <td><img src="./preview/languages.jpg" width="250"></td>
+      </tr>
+    </table>
+  </div>
+
+</details>
+
 
 ---
 
