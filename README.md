@@ -53,6 +53,7 @@ This app helps users efficiently organize their tasks, notes, and checklists in 
 | **Jetpack Compose** | UI components         |
 | **Material 3**  | Design system             |
 | **Hilt**        | Dependency Injection      |
+| **MVVM**        | Architecture pattern     |
 | **Room**        | Local database for users checklists and notes|
 | **DataStore**   | For saving user preferences|
 | **Coroutines**  | Asynchronous operations   |
