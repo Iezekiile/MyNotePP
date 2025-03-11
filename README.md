@@ -1,4 +1,4 @@
-# 📱 MyNote
+# 📱 MyNote (Check the actual code in the feature/settings branch)
 
 ## 🎥 Demo
 
